@@ -16,7 +16,8 @@ import cv2
 app = Flask(__name__)
 model_class = load_model('modelBase.hdf5')
 data = pd.read_excel('BirdsFinal.xlsx').to_dict('records')
-classes = [d['bird_en'] for d in data]
+classes_en = [d['bird_en'] for d in data]
+classes_ru = [d['bird_ru'] for d in data]
 app.config['SECRET_KEY'] = 'asdasda'
 app.config['UPLOADED_PHOTOS_DEST'] = 'uploads'
 
@@ -55,11 +56,13 @@ def predict_class(filename , model, lang):
         img_to_predict = img_to_predict/255.0
         prediction = np.argmax(model.predict(img_to_predict)[0])
         if lang == 'en':
-            return translate('en', classes[prediction])
+            return translate('en', classes_en[prediction])
         else:
-            return translate('ru', classes[prediction])
+            return translate('ru', classes_en[prediction])
     else:
-        raise KeyError
+        if lang == 'en':
+            return 'A photo of one bird is required'
+        else: return 'Необходимо фото одной птицы'
 
 class EnLoadForm(FlaskForm):
     photo = FileField(
@@ -96,7 +99,9 @@ def main(lang = None):
         filename = photos.save(post_form.photo.data, name=f"{uuid.uuid4().hex}.")
         file_url = url_for('get_preview', filename=filename)
         class_file = predict_class(file_url, model_class, lang)
-        desc_file = get_desc(class_file, lang)
+        if class_file in classes_en or class_file in classes_ru:
+            desc_file = get_desc(class_file, lang)
+        else: desc_file = None
     else:
         file_url = None
         class_file = None
