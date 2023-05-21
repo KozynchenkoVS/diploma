@@ -6,5 +6,5 @@ CREATE TABLE "ruBirds" (
 	"place_ru"	TEXT,
 	"bird_id"	INTEGER,
 	PRIMARY KEY("id" AUTOINCREMENT)
-	FOREIGN KEY("bird_id") REFERENCES classes(id)
+	FOREIGN KEY("bird_id") REFERENCES "classes"("id")
 );

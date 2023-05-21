@@ -6,5 +6,5 @@ CREATE TABLE "enBirds" (
 	"place_en"	TEXT,
 	"bird_id"	INTEGER,
 	PRIMARY KEY("id" AUTOINCREMENT)
-	FOREIGN KEY("bird_id") REFERENCES classes(id)
+	FOREIGN KEY("bird_id") REFERENCES "classes"("id")
 );
