@@ -25,15 +25,19 @@ class RuLoadForm(FlaskForm):
     submit = SubmitField('Загрузить')
 
 class Translator:
-    def __init__(self, currentLanguage="en"):
+    def __init__(self,DbManager, currentLanguage="en"):
         self.currentLanguage = currentLanguage
-
+        self.db_manager = DbManager
     def getFileForm(self):
         if self.currentLanguage == "ru":
             return RuLoadForm()
         else: return EnLoadForm()
 
-    def getBird(self, bird:Bird):
+    def getBird(self, bird_id):
+        bird = self.db_manager.execute_query("SELECT " + ", ".join(list((Bird().__dict__).keys())) 
+                    + f" FROM ruBirds JOIN enBirds ON ruBirds.bird_id=enBirds.bird_id WHERE enBirds.bird_id = {bird_id}")
+
+        bird = Bird(*bird[1])
         if self.currentLanguage == "ru":
             return bird.getRusssian()
         else: return bird.getEnglish()

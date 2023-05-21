@@ -11,16 +11,20 @@ from predictor import Predictor
 from translator import Translator
 from showBird import showBird
 from detector import Detector
+import os, random
+import db
+from db import config
 
 app = Flask(__name__)
-data = pd.read_excel('BirdsFinal.xlsx').to_dict('records')
-bd_birds = [Bird(d['bird_ru'], d['bird_en'], d['desc_en'], d['desc_ru'], d['place_ru'], d['place_en'], d['size_ru'], d['size_en']) for d in data]
-app.config['SECRET_KEY'] = 'asdasda'
-app.config['UPLOADED_PHOTOS_DEST'] = 'uploads'
+flask_conf = config(section='flask')
+app.config['SECRET_KEY'] = flask_conf['secret_key']
+app.config['UPLOADED_PHOTOS_DEST'] = flask_conf['uploaded_photos_dest']
 photos = UploadSet('photos', tuple('jpg jpeg png'.split()))
 configure_uploads(app, photos)
-predictor = Predictor('modelBase.hdf5', bd_birds)
-detector = Detector('yolov3')
+predictor = Predictor()
+detector = Detector()
+DbManager = db.DbManager()
+DbManager.init_database()
 
 @app.route('/uploads/<filename>')
 def get_preview(filename):
@@ -29,7 +33,7 @@ def get_preview(filename):
 @app.route('/', methods = ['GET', 'POST'])
 @app.route('/<lang>', methods = ['GET', 'POST'])
 def main(lang = None):
-    translator = Translator(lang)
+    translator = Translator(currentLanguage= lang, DbManager= DbManager)
     post_form = translator.getFileForm()
     hello_msg = translator.Hello()
     if post_form.validate_on_submit():
@@ -48,4 +52,18 @@ def main(lang = None):
         bird = None
     return render_template('index.html', Hello_Message = hello_msg, form = post_form, file_url = file_url, bird = bird, class_bird = class_bird)
 
-app.run(port=4996, debug=True)
+@app.route('/birds/<bird>')
+def get_random_bird(bird):
+    path = f"birds/{bird.rsplit(sep=':')[1]}"
+    filename = random.choice(os.listdir(path))
+    return send_from_directory(path, filename)  
+
+@app.route('/<lang>/bird/<bird>', methods = ['GET'])
+def bird(lang=None, bird=None):
+    translator = Translator(currentLanguage=lang, DbManager=DbManager)
+    bird_data = translator.getBird(bird)
+    file_url = url_for('get_random_bird', bird= bird_data[4])
+    bird = showBird(bird_data[0], bird_data[1], bird_data[2], bird_data[3])
+    return render_template('bird.html', file_url = file_url, bird = bird)
+
+app.run(port=int(flask_conf['port']), debug=True)

@@ -19,7 +19,9 @@
                   <a class="dropdown-item" href="/ru">Russian/Русский</a>
                   <a class="dropdown-item" href="/en">English/Английский</a>
                 </div>
-              </div>
+            </div>
+        </div>
+        </nav>
             <ul class="navbar-nav">
     </ul>
   </div>
@@ -27,13 +29,13 @@
     </head>
     <body>
         <div class="d-flex">
-            <div class="p-2 m-2">
+            <div class="formcontainer p-2 m-2">
             <label class="row justify-content-center" for="formFile" class="form-label">{{ Hello_Message }}</label>
             <form method="post" enctype="multipart/form-data" id="formFile">
                 {{form.hidden_tag()}}
 
                 {% for error in form.photo.errors %}
-                    <span style="color: red">{{ error }}</span>
+                    <span>{{ error }}</span>
                 {% endfor %}
                 <div class="row justify-content-center">
                     <div class="col-auto">
@@ -41,13 +43,12 @@
                     </div>
                     <div class="col-auto">
                         {{ form.submit(class="btn btn-success") }}
-
                     </div>
                 </div>
             </form>
             {% if file_url %}
-                <div class="row justify-content-center">
-                    <img src="{{ file_url }}" style="width: 400;">
+                <div class="imagecontainer row justify-content-center">
+                    <img src="{{ file_url }}" class= "img-responsive" style="width: 200px; height: 300px;">
                 </div>
             {% endif %}
             {% if class_bird %}
@@ -59,7 +60,7 @@
             {% endif %}
         </div>
             {% if bird %}
-            <div class="w-25 mx-auto">
+            <div class="infocontainer w-25 mx-auto">
                 
                     <p>{{ bird.name }}</p>
                     <p>{{ bird.place }}</p>
