@@ -17,6 +17,7 @@ class Predictor:
             img = img.resize((224, 224))
             img_to_predict = np.array([np.array(img)])
             img_to_predict = img_to_predict/255.0
-            pred_class = self.model.predict(img_to_predict)[0]
-            prediction = np.argmax(pred_class) + 1
-            return translator.getBird(prediction)
+            pred_class = self.model.predict(img_to_predict)
+            prediction = np.argmax(pred_class, axis = 1)[0] + 1
+            lang_bird = 'ruBirds' if translator.currentLanguage == 'ru' else 'enBirds' 
+            return translator.getBird(prediction, lang_bird)

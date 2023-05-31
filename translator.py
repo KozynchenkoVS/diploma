@@ -33,9 +33,9 @@ class Translator:
             return RuLoadForm()
         else: return EnLoadForm()
 
-    def getBird(self, bird_id):
+    def getBird(self, bird_id, lang_bird):
         bird = self.db_manager.execute_query("SELECT " + ", ".join(list((Bird().__dict__).keys())) 
-                    + f" FROM ruBirds JOIN enBirds ON ruBirds.bird_id=enBirds.bird_id WHERE enBirds.bird_id = {bird_id}")
+                    + f" FROM classes JOIN {lang_bird} ON classes.bird_id={lang_bird}.bird_id WHERE {lang_bird}.bird_id = {bird_id}")
 
         bird = Bird(*bird[1])
         if self.currentLanguage == "ru":

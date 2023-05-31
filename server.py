@@ -1,12 +1,6 @@
 from flask import Flask, render_template, send_from_directory, url_for
 from flask_uploads import UploadSet, configure_uploads
-from flask_wtf import FlaskForm
-from flask_wtf.file import FileField, FileRequired, FileAllowed
-from flask_ngrok import run_with_ngrok
-from wtforms import SubmitField
-import pandas as pd
 import uuid
-from bird import Bird
 from predictor import Predictor
 from translator import Translator
 from showBird import showBird

@@ -92,6 +92,8 @@ class DbManager:
         self.connect()
 
         pandas_df = pd.read_excel(filename)
+        pandas_df = pandas_df.sort_values('bird_en')
+        pandas_df = pandas_df.reset_index()
         pandas_df['id'] = pandas_df.index + 1
         clone = pd.DataFrame()
         clone['id'] = pandas_df['id']
@@ -115,5 +117,4 @@ class DbManager:
         clone['place_en'] = pandas_df['place_en']
         clone['bird_id'] = pandas_df['id']
         clone.to_sql(name='enBirds', con=self.connection, if_exists='append', index=False)
-
         self.close()
